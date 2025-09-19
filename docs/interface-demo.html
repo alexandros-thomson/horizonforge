@@ -1,190 +1,595 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="HorizonForge — real-time collaborative world-building for Meta Horizon. Try the demo and see multi-user editing, AI suggestions, and smart asset generation." />
-  <title>HorizonForge - Collaborative World Building (Demo)</title>
-  <style>
-    :root{
-      --accent-1:#667eea;
-      --accent-2:#764ba2;
-      --bg-grad: linear-gradient(135deg,var(--accent-1) 0%, var(--accent-2) 100%);
-      --panel-bg: rgba(255,255,255,0.96);
-      --glass: rgba(255,255,255,0.85);
-      --text-dark:#222;
-      --muted:#666;
-      --focus: 3px solid rgba(102,126,234,0.25);
-      --ui-radius:10px;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin:0;
-      min-height:100vh;
-      background:var(--bg-grad);
-      color:var(--text-dark);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HorizonForge - Interactive Collaborative Interface Demo</title>
+    <meta name="description" content="Interactive demonstration of HorizonForge's revolutionary collaborative world-building interface for Meta Horizon">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .demo-shell{
-      width:100%;
-      max-width:1400px;
-      height:calc(100vh - 36px);
-      border-radius:12px;
-      overflow:hidden;
-      box-shadow:0 20px 60px rgba(0,0,0,0.25);
-      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02));
-      display:grid;
-      grid-template-columns: 280px 1fr 260px;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
 
-    header.header{
-      grid-column:1/-1;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 22px;
-      background:var(--panel-bg);
-      border-bottom:1px solid rgba(0,0,0,0.06);
-      position:relative;
-      z-index:40;
-    }
-    .logo{
-      font-weight:800;
-      font-size:20px;
-      background:linear-gradient(135deg,var(--accent-1),var(--accent-2));
-      -webkit-background-clip:text;
-      -webkit-text-fill-color:transparent;
-    }
-    .project-name{font-size:14px;color:var(--text-dark);margin-left:12px;font-weight:600}
-    .header-actions{display:flex;gap:10px;align-items:center}
-    .action-btn{
-      padding:8px 14px;border-radius:8px;border:2px solid var(--accent-1);
-      background:white;color:var(--accent-1);font-weight:700;cursor:pointer;
-    }
-    .action-btn.primary{background:var(--accent-1);color:white;border-color:transparent}
-    .action-btn:focus{outline:none; box-shadow:var(--focus)}
+        .demo-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 200;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
 
-    aside.tool-sidebar, aside.collab-sidebar{
-      padding:22px;
-      background:var(--panel-bg);
-      overflow:auto;
-    }
-    aside.tool-sidebar{border-right:1px solid rgba(0,0,0,0.05)}
-    aside.collab-sidebar{border-left:1px solid rgba(0,0,0,0.05)}
+        .demo-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
 
-    main.main-viewport{
-      position:relative;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex-direction:column;
-      gap:12px;
-      background: url('/horizonforge/docs/assets/hero_v1.png') center/cover no-repeat;
-      padding:22px 0;
-    }
+        .demo-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
 
-    .viewport-wrap{
-      width:92%;
-      height:64%;
-      border-radius:12px;
-      position:relative;
-      overflow:hidden;
-      background:linear-gradient(180deg, rgba(0,0,0,0.04), rgba(255,255,255,0.02));
-      box-shadow:inset 0 2px 14px rgba(0,0,0,0.15);
-    }
+        .demo-links {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+        }
 
-    /* Particle canvas sits behind demo elements */
-    #particle-canvas{
-      position:absolute;left:0;top:0;width:100%;height:100%;z-index:6;pointer-events:none;mix-blend-mode:screen;opacity:0.85;
-    }
+        .demo-links a {
+            color: #67d7ff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
 
-    .demo-video{
-      width:92%;
-      max-width:960px;
-      margin:18px auto 0;
-    }
-    .demo-video .embed-wrap{
-      position:relative;
-      padding-bottom:56.25%;
-      height:0;
-      overflow:hidden;
-      border-radius:8px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.12);
-      background:rgba(0,0,0,0.03);
-    }
-    .demo-video iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;}
+        .demo-links a:hover {
+            background: rgba(255,255,255,0.1);
+        }
 
-    .collab-cursor{
-      position:absolute;
-      width:20px;height:20px;border-radius:50%;border:3px solid white;
-      box-shadow:0 6px 18px rgba(0,0,0,0.25);display:flex;align-items:center;justify-content:center;
-      font-size:11px;color:white;font-weight:700;transform:translate(-50%,-50%);
-      will-change:transform,opacity; z-index:30;
-    }
-    .cursor-alex{background:#00d4aa}
-    .cursor-sam{background:#ff6b9d}
-    .cursor-jordan{background:#4ecdc4}
+        .interface-container {
+            display: flex;
+            height: 100vh;
+            position: relative;
+            padding-top: 50px;
+        }
 
-    .user-label{
-      position:absolute;background:rgba(0,0,0,0.75);color:white;padding:6px 10px;border-radius:14px;font-size:13px;font-weight:700;
-      transform:translate(-50%,-120%);white-space:nowrap;z-index:30;
-    }
+        /* Main Viewport */
+        .main-viewport {
+            flex: 1;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:%23ff6b35;stop-opacity:1" /><stop offset="100%" style="stop-color:%23f7931e;stop-opacity:1" /></linearGradient></defs><rect width="1200" height="400" fill="url(%23skyGrad)"/><polygon points="0,400 300,250 600,200 900,180 1200,150 1200,800 0,800" fill="%23654321"/><circle cx="200" cy="300" r="80" fill="%23333" opacity="0.6"/><circle cx="800" cy="250" r="120" fill="%23333" opacity="0.6"/><circle cx="1000" cy="280" r="60" fill="%23333" opacity="0.6"/></svg>') center/cover;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .build-indicator{position:absolute;border:2px dashed;border-radius:6px;animation:building 1.6s infinite;z-index:28}
-    .indicator-1{width:100px;height:80px;border-color:#00d4aa;top:38%;left:22%}
-    .indicator-2{width:120px;height:60px;border-color:#ff6b9d;top:42%;right:30%}
-    @keyframes building{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.03)}}
+        /* Collaboration Cursors */
+        .collab-cursor {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.4);
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
 
-    .tool-section{margin-bottom:20px}
-    .tool-section h3{font-size:12px;color:var(--text-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-    .tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-    .tool-btn{aspect-ratio:1;background:#f7f8fb;border:1px solid #e8eaf0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer}
-    .tool-btn:focus{outline:none;box-shadow:var(--focus)}
-    .tool-btn.active{background:var(--accent-1);color:white;border-color:transparent}
+        .cursor-alex {
+            background: #00d4aa;
+            top: 30%;
+            left: 25%;
+        }
 
-    .ai-panel{padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));color:white;margin-bottom:16px}
-    .ai-suggestion{background:rgba(255,255,255,0.08);padding:8px;border-radius:8px;margin:8px 0;cursor:pointer}
+        .cursor-sam {
+            background: #ff6b9d;
+            top: 45%;
+            right: 35%;
+        }
 
-    .collaborator{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
-    .collab-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
-    .avatar-alex{background:#00d4aa}.avatar-sam{background:#ff6b9d}.avatar-jordan{background:#4ecdc4}
-    .collab-status{font-size:13px;color:var(--muted)}
+        .cursor-jordan {
+            background: #4ecdc4;
+            bottom: 40%;
+            left: 60%;
+        }
 
-    .stats{margin-top:18px;padding:12px;background:#f7f8fb;border-radius:8px;font-size:13px;color:var(--muted)}
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
 
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+        /* User Labels */
+        .user-label {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            pointer-events: none;
+        }
 
-    /* Voice UI */
-    .voice-control{
-      position:absolute;right:18px;bottom:18px;z-index:40;display:flex;flex-direction:column;gap:8px;
-    }
-    .mic-btn{
-      width:56px;height:56px;border-radius:14px;background:linear-gradient(180deg,#ff8a65,#ff7043);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;border:0;cursor:pointer;
-      box-shadow:0 8px 18px rgba(0,0,0,0.18);
-    }
-    .mic-btn.listening{background:linear-gradient(180deg,#ffd54f,#ffca28);}
+        .label-alex {
+            top: 25%;
+            left: 27%;
+        }
 
-    .voice-hint{background:rgba(0,0,0,0.6);color:white;padding:8px 10px;border-radius:10px;font-size:13px}
+        .label-sam {
+            top: 40%;
+            right: 30%;
+        }
 
-    @media (max-width:1100px){
-      .demo-shell{grid-template-columns: 220px 1fr; grid-template-rows: auto 1fr}
-      aside.collab-sidebar{display:none}
-      header.header{grid-column:1/3}
-      .viewport-wrap{height:58%}
-    }
-  </style>
+        .label-jordan {
+            bottom: 35%;
+            left: 62%;
+        }
+
+        /* Left Sidebar - Tools */
+        .tool-sidebar {
+            width: 300px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(0,0,0,0.1);
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .tool-section {
+            margin-bottom: 30px;
+        }
+
+        .tool-section h3 {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .tool-btn {
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 20px;
+        }
+
+        .tool-btn:hover {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .tool-btn.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        /* AI Assistant Panel */
+        .ai-panel {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .ai-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-avatar {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .ai-suggestion {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin: 8px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid rgba(255,255,255,0.3);
+        }
+
+        .ai-suggestion:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateX(5px);
+        }
+
+        /* Right Sidebar - Collaborators */
+        .collab-sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(15px);
+            border-left: 1px solid rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+
+        .collab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .collab-header h3 {
+            font-size: 16px;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .invite-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .invite-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .collaborator {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+
+        .collaborator:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 10px;
+            padding: 15px 10px;
+        }
+
+        .collab-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .avatar-alex { background: #00d4aa; }
+        .avatar-sam { background: #ff6b9d; }
+        .avatar-jordan { background: #4ecdc4; }
+
+        .collab-info h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .collab-status {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Top Header */
+        .header {
+            position: absolute;
+            top: 50px;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(15px);
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .project-name {
+            font-size: 20px;
+            color: #333;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .action-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .action-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Building Indicators */
+        .build-indicator {
+            position: absolute;
+            border: 3px dashed;
+            border-radius: 6px;
+            animation: building 2s infinite;
+        }
+
+        .indicator-1 {
+            width: 120px;
+            height: 90px;
+            top: 35%;
+            left: 20%;
+            border-color: #00d4aa;
+        }
+
+        .indicator-2 {
+            width: 140px;
+            height: 70px;
+            top: 40%;
+            right: 30%;
+            border-color: #ff6b9d;
+        }
+
+        @keyframes building {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .demo-overlay {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 12px;
+            max-width: 300px;
+        }
+
+        @media (max-width: 1024px) {
+            .tool-sidebar, .collab-sidebar {
+                width: 250px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="demo-shell" role="application" aria-label="HorizonForge interactive demo">...</div>
+    <div class="demo-header">
+        <div>
+            <div class="demo-title">HorizonForge - Interactive Demo</div>
+            <div class="demo-subtitle">Collaborative World-Building for Meta Horizon</div>
+        </div>
+        <div class="demo-links">
+            <a href="../README.md">📚 Documentation</a>
+            <a href="https://github.com/alexandros-thomson/horizonforge">🔧 Repository</a>
+            <a href="https://devpost.com/software/horizonforge">🏆 Competition</a>
+        </div>
+    </div>
 
-  <script>/* trimmed for push placeholder: full demo script present in original file with VIDEO_ID placeholder */</script>
+    <div class="interface-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">HorizonForge</div>
+            <div class="project-name">🏰 Medieval Fantasy Realm</div>
+            <div class="header-actions">
+                <button class="action-btn">Save</button>
+                <button class="action-btn">Share</button>
+                <button class="action-btn primary">Publish</button>
+            </div>
+        </div>
+
+        <!-- Left Sidebar - Tools -->
+        <div class="tool-sidebar">
+            <!-- AI Assistant -->
+            <div class="ai-panel">
+                <div class="ai-header">
+                    <div class="ai-avatar">🤖</div>
+                    <strong>AI Assistant</strong>
+                </div>
+                <div class="ai-suggestion">💡 Add medieval torches for atmosphere</div>
+                <div class="ai-suggestion">🏰 Suggest castle wall textures</div>
+                <div class="ai-suggestion">🌙 Generate moonlight ambiance</div>
+                <div class="ai-suggestion">⚔️ Place weapon rack near entrance</div>
+            </div>
+
+            <!-- Building Tools -->
+            <div class="tool-section">
+                <h3>Building Tools</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn active">🧱</div>
+                    <div class="tool-btn">🏗️</div>
+                    <div class="tool-btn">🎨</div>
+                    <div class="tool-btn">💡</div>
+                    <div class="tool-btn">🌿</div>
+                    <div class="tool-btn">💎</div>
+                </div>
+            </div>
+
+            <!-- Smart Assets -->
+            <div class="tool-section">
+                <h3>Smart Assets</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn">🏰</div>
+                    <div class="tool-btn">🌳</div>
+                    <div class="tool-btn">⛰️</div>
+                    <div class="tool-btn">🌊</div>
+                    <div class="tool-btn">🔥</div>
+                    <div class="tool-btn">⭐</div>
+                </div>
+            </div>
+
+            <!-- Collaboration -->
+            <div class="tool-section">
+                <h3>Collaboration</h3>
+                <div class="tool-grid">
+                    <div class="tool-btn">👥</div>
+                    <div class="tool-btn">💬</div>
+                    <div class="tool-btn">📸</div>
+                    <div class="tool-btn">🎥</div>
+                    <div class="tool-btn">📤</div>
+                    <div class="tool-btn">⚙️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Viewport -->
+        <div class="main-viewport">
+            <!-- Collaboration Cursors -->
+            <div class="collab-cursor cursor-alex"></div>
+            <div class="collab-cursor cursor-sam"></div>
+            <div class="collab-cursor cursor-jordan"></div>
+
+            <!-- User Labels -->
+            <div class="user-label label-alex">Alex_Builder</div>
+            <div class="user-label label-sam">Sam_Designer</div>
+            <div class="user-label label-jordan">Jordan_Architect</div>
+
+            <!-- Building Indicators -->
+            <div class="build-indicator indicator-1"></div>
+            <div class="build-indicator indicator-2"></div>
+
+            <!-- Demo Overlay -->
+            <div class="demo-overlay">
+                <strong>🚀 Live Collaboration Demo</strong><br>
+                Watch 3 creators building simultaneously with AI assistance.<br>
+                <em>Real-time synchronization • Conflict resolution • Smart suggestions</em>
+            </div>
+        </div>
+
+        <!-- Right Sidebar - Collaborators -->
+        <div class="collab-sidebar">
+            <div class="collab-header">
+                <h3>Active Collaborators</h3>
+                <button class="invite-btn">+ Invite</button>
+            </div>
+
+            <div class="collaborator">
+                <div class="collab-avatar avatar-alex">A</div>
+                <div class="collab-info">
+                    <h4>Alex_Builder</h4>
+                    <div class="collab-status">🔨 Building castle walls</div>
+                </div>
+            </div>
+
+            <div class="collaborator">
+                <div class="collab-avatar avatar-sam">S</div>
+                <div class="collab-info">
+                    <h4>Sam_Designer</h4>
+                    <div class="collab-status">🎨 Adding stone textures</div>
+                </div>
+            </div>
+
+            <div class="collaborator">
+                <div class="collab-avatar avatar-jordan">J</div>
+                <div class="collab-info">
+                    <h4>Jordan_Architect</h4>
+                    <div class="collab-status">📐 Planning tower layout</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 12px;">
+                <h4 style="font-size: 14px; margin-bottom: 10px; color: #333;">📊 Session Statistics</h4>
+                <div style="font-size: 12px; color: #666; line-height: 1.4;">
+                    <div>⏱️ Active Time: 2h 34m</div>
+                    <div>🎯 Objects Placed: 247</div>
+                    <div>👥 Contributors: 3 active</div>
+                    <div>🤖 AI Suggestions: 18</div>
+                    <div>💾 Auto-saved: 2m ago</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 12px; color: white; text-align: center;">
+                <div style="font-size: 14px; font-weight: 600; margin-bottom: 5px;">🏆 Competition Entry</div>
+                <div style="font-size: 12px; opacity: 0.9;">Meta Horizon Creator Competition 2025</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
