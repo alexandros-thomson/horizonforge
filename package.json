@@ -1,0 +1,8 @@
+{
+  "name": "horizonforge",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "validate-obs": "node scripts/obs-recording-path-validator.js"
+  }
+}
