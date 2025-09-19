@@ -2,22 +2,45 @@
 /**
  * OBS Recording Path Validator
  * Checks OBS WebSocket connection and confirms the recording folder matches your --file path.
+ * 
+ * Priority for parameters:
+ *   CLI arg > Environment variable > Default
+ * 
+ * Env vars:
+ *   OBS_RECORDING_FILE  (default: ./recordings/demo.mp4)
+ *   OBS_HOST            (default: localhost:4455)
+ *   OBS_PASSWORD        (default: undefined)
  */
 
 const OBSWebSocket = require('obs-websocket-js').default;
 const path = require('path');
+const yargs = require('yargs');
 
-const argv = require('yargs')
-  .option('obs-host', { type: 'string', default: 'localhost:4455', describe: 'OBS WebSocket host:port' })
-  .option('obs-pass', { type: 'string', describe: 'OBS WebSocket password (or set OBS_PASSWORD env var)' })
-  .option('file', { type: 'string', demandOption: true, describe: 'Expected full path to recording file' })
+const argv = yargs
+  .option('file', {
+    type: 'string',
+    describe: 'Expected full path to recording file',
+    default: process.env.OBS_RECORDING_FILE || './recordings/demo.mp4'
+  })
+  .option('obs-host', {
+    type: 'string',
+    describe: 'OBS WebSocket host:port',
+    default: process.env.OBS_HOST || 'localhost:4455'
+  })
+  .option('obs-pass', {
+    type: 'string',
+    describe: 'OBS WebSocket password',
+    default: process.env.OBS_PASSWORD
+  })
   .help()
   .argv;
 
 (async () => {
   const obs = new OBSWebSocket();
   const [host, port] = argv['obs-host'].split(':');
-  const password = argv['obs-pass'] || process.env.OBS_PASSWORD;
+  const password = argv['obs-pass'];
+
+  console.log(`Using parameters:\n  OBS Host: ${argv['obs-host']}\n  OBS Password: ${password ? '[set]' : '[not set]'}\n  File: ${argv.file}`);
 
   try {
     console.log(`🔌 Connecting to OBS at ${host}:${port}...`);
