@@ -1,0 +1,7 @@
+# Quick Deployment (3 commands)
+cd ~/horizonforge  # or your local path
+mkdir -p docs
+# Copy the HTML from artifact above to docs/interface-demo.html
+git add docs/
+git commit -m "🏆 Championship Deploy - Interactive Demo"
+git push origin main
