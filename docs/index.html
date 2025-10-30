@@ -1,10 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>GitHub Pages</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HorizonForge - Collaborative World-Building Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin: 0; padding: 0; text-align: center; }
+        .container { max-width: 800px; margin: 0 auto; padding: 50px 20px; }
+        h1 { font-size: 3em; margin-bottom: 20px; }
+        p { font-size: 1.2em; margin-bottom: 40px; }
+        .features { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .feature { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; width: 300px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        button { background: #ff6b6b; color: white; border: none; padding: 15px 30px; font-size: 1em; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #ff5252; }
+        footer { margin-top: 50px; font-size: 0.8em; }
+    </style>
 </head>
 <body>
-    <h1>Welcome to Horizonforge</h1>
-    <p>This is the GitHub Pages for the Horizonforge project.</p>
+    <div class="container">
+        <h1>Welcome to HorizonForge</h1>
+        <p>Revolutionary collaborative world-building platform for Meta Horizon. Real-time creation with AI assistance and voice commands. Forge legends together!</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>Real-Time Collaboration</h3>
+                <p>Invite friends to build worlds instantly. See edits live with WebRTC-powered connections.</p>
+                <button onclick="alert('Inviting collaborators...')">Invite Collaborators</button>
+            </div>
+            <div class="feature">
+                <h3>AI-Assisted Creation</h3>
+                <p>Use AI to generate ideas, optimize builds, and enhance your worlds automatically.</p>
+                <button onclick="alert('AI generating ideas...')">Generate with AI</button>
+            </div>
+            <div class="feature">
+                <h3>Voice Commands</h3>
+                <p>Speak commands like 'Create a castle' to build intuitively in VR.</p>
+                <button onclick="alert('Listening for voice commands...')">Start Voice Mode</button>
+            </div>
+            <div class="feature">
+                <h3>Unity-Powered VR</h3>
+                <p>Seamlessly integrate with Meta Horizon Worlds using robust Unity backend.</p>
+                <button onclick="alert('Entering VR world...')">Launch in VR</button>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Built for Meta Horizon Competition | Demo Version</p>
+        </footer>
+    </div>
 </body>
 </html>
